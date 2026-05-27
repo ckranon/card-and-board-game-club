@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card &amp; Board Game Club — Oakton Community College</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-elevated: #12121a;
+    --fg: #f0f0f5;
+    --muted: #8a8aa3;
+    --neon-pink: #ff2d95;
+    --neon-cyan: #00f0ff;
+    --neon-purple: #b829dd;
+    --neon-green: #39ff14;
+    --border: #1e1e2e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,45,149,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,45,149,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .bg-glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 { top: -200px; left: -200px; background: var(--neon-pink); }
+  .glow-2 { bottom: -200px; right: -200px; background: var(--neon-cyan); }
+  .glow-3 { top: 40%; left: 50%; background: var(--neon-purple); }
+
+  .content { position: relative; z-index: 1; }
+
+  /* Navigation */
+  nav {
+    position: sticky; top: 0;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  nav .container {
+    max-width: 1100px; margin: 0 auto; padding: 1rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 1.3rem;
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: var(--muted); font-weight: 500; font-size: 0.9rem;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--neon-cyan); }
+
+  /* Hero */
+  .hero {
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    max-width: 900px; margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: pulse 3s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,240,255,0.2); }
+    50% { box-shadow: 0 0 20px rgba(0,240,255,0.4); }
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.2rem; color: var(--muted);
+    max-width: 600px; margin: 0 auto 2rem;
+  }
+  .cta-row {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 0.9rem 2rem; border-radius: 12px;
+    font-weight: 600; font-size: 1rem;
+    text-decoration: none; transition: all 0.2s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: white;
+    box-shadow: 0 4px 30px rgba(255,45,149,0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(255,45,149,0.5);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+
+  /* Stats bar */
+  .stats {
+    display: flex; justify-content: center; gap: 3rem;
+    padding: 2rem; flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.5rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { color: var(--muted); font-size: 0.85rem; }
+
+  /* Sections */
+  section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem; font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .section-sub { color: var(--muted); margin-bottom: 2.5rem; }
+
+  /* Featured Collection Card */
+  .collection-card {
+    background: var(--bg-elevated);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .collection-card::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 20px;
+    opacity: 0.08;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    pointer-events: none;
+  }
+  .collection-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(0,240,255,0.2);
+  }
+  .collection-card .collection-icon {
+    font-size: 3rem; margin-bottom: 1rem; position: relative; z-index: 1;
+  }
+  .collection-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem; margin-bottom: 0.75rem;
+    position: relative; z-index: 1;
+  }
+  .collection-card p {
+    color: var(--muted); font-size: 1rem;
+    max-width: 500px; margin: 0 auto 1.25rem;
+    position: relative; z-index: 1;
+  }
+  .collection-card .btn {
+    position: relative; z-index: 1;
+  }
+
+  /* Trio grid: center card for collection, side cards for D&D and CCGs */
+  .game-grid-trio {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  .game-grid-trio .game-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .game-grid-trio .collection-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Game cards (fallback / general) */
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .game-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-card::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 16px;
+    opacity: 0; transition: opacity 0.3s;
+    background: linear-gradient(135deg, rgba(255,45,149,0.1), rgba(0,240,255,0.1));
+  }
+  .game-card:hover::before { opacity: 1; }
+  .game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,45,149,0.3);
+  }
+  .game-icon {
+    font-size: 2.5rem; margin-bottom: 1rem;
+  }
+  .game-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem; margin-bottom: 0.5rem;
+  }
+  .game-card p { color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .tag-dropin { background: rgba(57,255,20,0.15); color: var(--neon-green); }
+  .tag-commit { background: rgba(255,45,149,0.15); color: var(--neon-pink); }
+
+  /* Events */
+  .event-list { display: flex; flex-direction: column; gap: 1rem; }
+  .event-item {
+    display: flex; align-items: center; gap: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    transition: all 0.2s;
+  }
+  .event-item:hover {
+    border-color: var(--neon-cyan);
+    transform: translateX(4px);
+  }
+  .event-date {
+    text-align: center; min-width: 60px;
+  }
+  .event-date .month {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--neon-cyan); text-transform: uppercase;
+  }
+  .event-date .day {
+    font-size: 0.85rem; color: var(--muted);
+  }
+  .event-date.weekly .day {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--neon-pink);
+    line-height: 1;
+  }
+  .event-info h4 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+  .event-info p { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+  /* Officers */
+  .officer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .officer-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+  }
+  .officer-card:hover { border-color: var(--neon-purple); }
+  .officer-card .role {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--neon-purple); margin-bottom: 0.5rem;
+  }
+  .officer-card .name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .officer-card .desc { color: var(--muted); font-size: 0.9rem; }
+  .officer-card.open {
+    border-style: dashed;
+    border-color: var(--neon-green);
+  }
+  .officer-card.open .role { color: var(--neon-green); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  footer .logo { margin-bottom: 1rem; display: inline-block; }
+
+  @media (max-width: 900px) {
+    .game-grid-trio {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2.2rem; }
+    .stats { gap: 1.5rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+<div class="bg-glow glow-3"></div>
+
+<div class="content">
+
+<nav>
+  <div class="container">
+    <div class="logo">🎲 Card &amp; Board Game Club</div>
+    <div class="nav-links">
+      <a href="#games">Games</a>
+      <a href="#events">Events</a>
+      <a href="#officers">Officers</a>
+      <a href="#join">Join</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">✨ Now Recruiting for Fall 2026</div>
+  <h1>Roll the Dice.<br><span>Make Friends.</span></h1>
+  <p>Oakton's home for tabletop gaming, D&amp;D one-shots, and competitive card play. No experience needed — just show up.</p>
+  <div class="cta-row">
+    <a href="#join" class="btn btn-primary">Join the Club</a>
+    <a href="#events" class="btn btn-secondary">See Events</a>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">2</div><div class="stat-label">Campuses</div></div>
+  <div class="stat"><div class="stat-num">2x</div><div class="stat-label">Per Week</div></div>
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label">Experience Needed</div></div>
+  <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Fun Guaranteed</div></div>
+</div>
+
+<section id="games">
+  <h2>What We Play</h2>
+  <p class="section-sub">Drop in anytime. Grab a seat. Roll the dice.</p>
+
+  <div class="game-grid-trio">
+    <div class="game-card">
+      <div class="game-icon">🐉</div>
+      <h3>Dungeons &amp; Dragons</h3>
+      <p>One-shots, campaign arcs, and full campaigns. Pre-made characters available. No experience needed.</p>
+      <span class="tag tag-dropin">Drop-In Anytime</span>
+    </div>
+
+    <div class="collection-card">
+      <div class="collection-icon">📚</div>
+      <h3>Our Collection</h3>
+      <p>Browse 30+ board games, card games, and RPGs on BoardGameGeek.</p>
+      <a href="https://boardgamegeek.com/geeklist/377437/oakton-college-c-and-bg-club-inventory" target="_blank" class="btn btn-primary">View List →</a>
+    </div>
+
+    <div class="game-card">
+      <div class="game-icon">🃏</div>
+      <h3>Collectible Card Games</h3>
+      <p>Magic: The Gathering, Pokémon, Yu-Gi-Oh! — bring your decks, trade, and play.</p>
+      <span class="tag tag-dropin">Drop-In Anytime</span>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <h2>Upcoming Events</h2>
+  <p class="section-sub">Special events and campus appearances.</p>
+  <div class="event-list">
+    <div class="event-item">
+      <div class="event-date"><div class="month">Aug</div><div class="day">26</div></div>
+      <div class="event-info">
+        <h4>Fall Fest — Skokie Campus</h4>
+        <p>Find our booth and play a quick game. Open to all students.</p>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-date"><div class="month">Aug</div><div class="day">27</div></div>
+      <div class="event-info">
+        <h4>Fall Fest — Des Plaines Campus</h4>
+        <p>Our home campus. Come meet the officers and try a demo.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 3rem; font-family: &#39;Space Grotesk&#39;, sans-serif; font-size: 1.3rem; color: var(--fg);">Regular Meeting Schedule</h3>
+  <p class="section-sub">Same time, same place. Just show up.</p>
+  <div class="event-list">
+    <div class="event-item">
+      <div class="event-date weekly"><div class="day">Tue</div></div>
+      <div class="event-info">
+        <h4>Game Night — Des Plaines</h4>
+        <p>1:00–4:00 PM · Cafeteria · No RSVP required.</p>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-date weekly"><div class="day">Thu</div></div>
+      <div class="event-info">
+        <h4>Game Night — Des Plaines</h4>
+        <p>1:00–4:00 PM · Cafeteria · No RSVP required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="officers">
+  <h2>Meet the Officers</h2>
+  <p class="section-sub">The people who keep the dice rolling.</p>
+  <div class="officer-grid">
+    <div class="officer-card">
+      <div class="role">President</div>
+      <div class="name">Christopher Janickas</div>
+      <div class="desc">SGA liaison, external relations, institutional paperwork.</div>
+    </div>
+    <div class="officer-card">
+      <div class="role">Vice President</div>
+      <div class="name">Christian Ranon</div>
+      <div class="desc">Operations, event coordination, inventory, backup SGA rep.</div>
+    </div>
+    <div class="officer-card">
+      <div class="role">Advisor</div>
+      <div class="name">Gretchen Schneider</div>
+      <div class="desc">Coordinator of Access Services at the Oakton College Library; institutional guidance &amp; Student Life coordination.</div>
+    </div>
+    <div class="officer-card open">
+      <div class="role">Now Recruiting</div>
+      <div class="name">Treasurer</div>
+      <div class="desc">Track expenses, submit reimbursements. ~30 min/week.</div>
+    </div>
+    <div class="officer-card open">
+      <div class="role">Now Recruiting</div>
+      <div class="name">Event Coordinator</div>
+      <div class="desc">Plan tournaments, D&amp;D marathons, themed nights. 1–2 hrs/week.</div>
+    </div>
+    <div class="officer-card open">
+      <div class="role">Now Recruiting</div>
+      <div class="name">VP — Skokie</div>
+      <div class="desc">Launch weekly game nights at Skokie campus. Build from scratch.</div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <h2>How to Join</h2>
+  <p class="section-sub">Three ways to get involved. Pick what works for you.</p>
+  <div class="cta-row" style="margin-top: 2rem;">
+    <a href="#" class="btn btn-secondary" style="min-width: 200px; text-align: center;">
+      <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚪</div>
+      <div style="font-weight: 700;">Just Show Up</div>
+      <div style="font-size: 0.85rem; color: var(--muted); font-weight: 400;">No registration needed</div>
+    </a>
+    <a href="https://oakton.presence.io/organization/card-and-board-game-club" target="_blank" class="btn btn-primary" style="min-width: 200px; text-align: center;">
+      <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔗</div>
+      <div style="font-weight: 700;">Oakton Involve</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); font-weight: 400;">Get event notifications</div>
+    </a>
+    <a href="https://discord.gg/4scYQrWEyC" target="_blank" class="btn btn-secondary" style="min-width: 200px; text-align: center; border-color: #5865F2; color: #5865F2;">
+      <div style="margin-bottom: 0.5rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" width="28" height="22" fill="currentColor" style="display: inline-block; vertical-align: middle;">
+          <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"></path>
+        </svg>
+      </div>
+      <div style="font-weight: 700;">Discord</div>
+      <div style="font-size: 0.85rem; color: var(--muted); font-weight: 400;">Chat with members</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">🎲 Card &amp; Board Game Club</div>
+  <p>Oakton Community College · Tuesdays &amp; Thursdays, 1:00–4:00 PM · Des Plaines Campus, Cafeteria</p>
+  <p style="margin-top: 0.5rem; font-size: 0.8rem;">A registered student organisation.</p>
+</footer>
+
+</div>
+
+
+<div id="hl-aria-live-message-container" aria-live="polite" class="visually-hidden"></div><div id="hl-aria-live-alert-container" role="alert" aria-live="assertive" class="visually-hidden"></div></body></html>

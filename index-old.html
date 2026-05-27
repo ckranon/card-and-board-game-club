@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card and Board Game Club — Oakton Community College</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --fg: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-warm: #f0883e;
+    --accent-green: #3fb950;
+    --border: #30363d;
+    --card: #21262d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Navigation */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--fg);
+  }
+  .nav-links {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.9rem;
+  }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--fg); }
+
+  /* Hero */
+  .hero {
+    padding: 4rem 0 3rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .hero .tagline {
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .hero .when-where {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero .when-where span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .pill {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .pill-accent {
+    background: rgba(88, 166, 255, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .pill-warm {
+    background: rgba(240, 136, 62, 0.1);
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+  }
+
+  /* Banner */
+  .banner {
+    background: rgba(240, 136, 62, 0.08);
+    border: 1px solid var(--accent-warm);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    text-align: left;
+  }
+  .banner h4 {
+    font-size: 1rem;
+    color: var(--accent-warm);
+    margin-bottom: 0.4rem;
+  }
+  .banner p {
+    font-size: 0.9rem;
+    color: var(--fg);
+    margin-bottom: 0.4rem;
+  }
+  .banner .banner-meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* Sections */
+  section {
+    padding: 3rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--fg);
+  }
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--accent-warm);
+  }
+  p { margin-bottom: 1rem; color: var(--fg); }
+  p.muted { color: var(--muted); }
+
+  /* Game cards */
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .game-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .game-card h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .game-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+  .game-card .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.75rem;
+  }
+  .tag-dropin { background: rgba(63, 185, 80, 0.15); color: #3fb950; }
+  .tag-commit { background: rgba(240, 136, 62, 0.15); color: #f0883e; }
+
+  /* Calendar */
+  .calendar-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .calendar-box iframe {
+    width: 100%;
+    height: 400px;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  /* Officer cards */
+  .officer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .officer-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .officer-card.filled {
+    border-left: 3px solid var(--accent);
+  }
+  .officer-card.open {
+    border-left: 3px solid var(--accent-warm);
+  }
+  .officer-card .role {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .officer-card .name {
+    font-size: 0.95rem;
+    color: var(--fg);
+    margin-bottom: 0.5rem;
+  }
+  .officer-card .desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .officer-card .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.75rem;
+  }
+  .badge-open {
+    background: rgba(240, 136, 62, 0.15);
+    color: var(--accent-warm);
+  }
+  .badge-filled {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--accent);
+  }
+
+  /* Join section */
+  .join-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .join-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .join-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .join-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .join-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+
+  /* QR section */
+  .qr-placeholder {
+    width: 160px;
+    height: 160px;
+    background: var(--bg-alt);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 1rem auto;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .hero .when-where { flex-direction: column; gap: 0.4rem; }
+    .nav-links { gap: 0.8rem; font-size: 0.85rem; }
+    .game-grid { grid-template-columns: 1fr; }
+    .officer-grid { grid-template-columns: 1fr; }
+    .join-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">🎲 Card & Board Game Club</div>
+    <div class="nav-links">
+      <a href="#games">Games</a>
+      <a href="#events">Events</a>
+      <a href="#dnd">D&D</a>
+      <a href="#officers">Officers</a>
+      <a href="#join">Join</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>Card and Board Game Club</h1>
+    <p class="tagline">Oakton Community College — All skill levels welcome. No experience required.</p>
+    <div class="when-where">
+      <span>📅 Tuesdays & Thursdays</span>
+      <span>🕐 1:00 PM – 4:00 PM</span>
+      <span>📍 Des Plaines Campus, Cafeteria</span>
+    </div>
+    <div>
+      <a href="https://oakton.presence.io/organization/card-and-board-game-club" class="pill pill-accent">Free to Join</a>
+      <span class="pill pill-warm">28 Members</span>
+    </div>
+
+    <!-- Fall Fest Banner -->
+    <div class="banner">
+      <h4>🍂 Fall Fest 2026 — Find Us There!</h4>
+      <p><strong>Skokie:</strong> Tuesday, August 26 &nbsp;|&nbsp; <strong>Des Plaines:</strong> Wednesday, August 27</p>
+      <p class="banner-meta">Come play a quick game and meet the officers. New members welcome — no sign-up required.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="games">
+    <div class="container">
+      <h2>Games We Play</h2>
+      <p class="muted">Drop in anytime. We have cards, boards, and dice ready. Want to bring your own game? Absolutely.</p>
+      <div class="game-grid">
+        <div class="game-card">
+          <h4>🃏 Uno</h4>
+          <p>Fast, chaotic, and drop-in friendly. Play one hand or twenty.</p>
+          <span class="tag tag-dropin">Drop-In</span>
+        </div>
+        <div class="game-card">
+          <h4>🎲 Backgammon</h4>
+          <p>Classic two-player strategy. Boards available — just grab a seat.</p>
+          <span class="tag tag-dropin">Drop-In</span>
+        </div>
+        <div class="game-card">
+          <h4>⚔️ D&D One-Shots</h4>
+          <p>Pre-made characters. Two-hour adventures. No campaign commitment.</p>
+          <span class="tag tag-dropin">Drop-In</span>
+        </div>
+        <div class="game-card">
+          <h4>🐉 D&D Campaign Arcs</h4>
+          <p>3–5 connected sessions for players who want a longer story.</p>
+          <span class="tag tag-commit">3–5 Weeks</span>
+        </div>
+        <div class="game-card">
+          <h4>🧙 Bring Your Own</h4>
+          <p>Magic: The Gathering, chess, Catan, Splendor, whatever you want to play.</p>
+          <span class="tag tag-dropin">Drop-In</span>
+        </div>
+        <div class="game-card">
+          <h4>🏆 Special Events</h4>
+          <p>Tournaments, draft nights, and themed game days. Check the calendar.</p>
+          <span class="tag tag-commit">Scheduled</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="events">
+    <div class="container">
+      <h2>Event Calendar</h2>
+      <p class="muted">Regular game nights every Tuesday and Thursday. Special events and Fall Fest dates below.</p>
+      <div class="calendar-box">
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          <strong>🗓️ Upcoming Events</strong>
+        </p>
+        <div style="text-align: left; max-width: 500px; margin: 0 auto;">
+          <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+            <strong style="color: var(--accent-warm);">Tue, Aug 26</strong> — Fall Fest @ Skokie Campus
+            <div style="font-size: 0.85rem; color: var(--muted);">Find our booth and play a quick game. Open to all students.</div>
+          </div>
+          <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+            <strong style="color: var(--accent-warm);">Wed, Aug 27</strong> — Fall Fest @ Des Plaines Campus
+            <div style="font-size: 0.85rem; color: var(--muted);">Our home campus. Come meet the officers and try a demo.</div>
+          </div>
+          <div style="padding: 0.75rem 0;">
+            <strong style="color: var(--accent);">Tuesdays & Thursdays, 1–4 PM</strong> — Regular Game Night
+            <div style="font-size: 0.85rem; color: var(--muted);">Des Plaines Campus, Cafeteria. No RSVP required.</div>
+          </div>
+        </div>
+        <!--
+        <iframe src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&ctz=America%2FChicago"
+                style="border: 0; margin-top: 1.5rem;" width="100%" height="400" frameborder="0" scrolling="no">
+        </iframe>
+        -->
+        <p class="muted" style="margin-top: 1.5rem; font-size: 0.85rem;">
+          Full Google Calendar coming soon. Follow Oakton Involve for automatic event notifications.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="dnd">
+    <div class="container">
+      <h2>Dungeons & Dragons</h2>
+      <p>We love D&D, but we also respect your time and our DMs' energy. That is why we run D&D in tiers:</p>
+
+      <h3>One-Shot Sessions</h3>
+      <p>Show up, pick a pre-made character, and play a complete 2–3 hour adventure. No homework, no session zero, no commitment. Perfect for newcomers and busy schedules.</p>
+
+      <h3>Campaign Arcs</h3>
+      <p>A short story told over 3–5 sessions. Enough depth to care about your character, short enough to finish before midterms.</p>
+
+      <h3>Full Campaigns</h3>
+      <p>Level 1–20 epics happen only when a dedicated group and DM commit for the long haul. These are co-op ventures, not solo DM marathons.</p>
+
+      <p class="muted" style="margin-top: 1.5rem;">
+        <strong>Want to DM?</strong> Talk to Christian (VP). We provide pre-made modules, dice, and moral support.
+      </p>
+    </div>
+  </section>
+
+  <section id="officers">
+    <div class="container">
+      <h2>Officers & Open Positions</h2>
+      <p class="muted">The people who keep the dice rolling. We are currently recruiting for three open roles — talk to any officer at a game night to learn more.</p>
+
+      <div class="officer-grid">
+        <div class="officer-card filled">
+          <div class="role">President</div>
+          <div class="name">Christopher Janickas</div>
+          <div class="desc">SGA liaison, external relations, institutional paperwork. Elected Spring 2026; next election Fall 2026 per Club Constitution.</div>
+          <span class="badge badge-filled">Filled</span>
+        </div>
+
+        <div class="officer-card filled">
+          <div class="role">Vice President</div>
+          <div class="name">Christian Ranon</div>
+          <div class="desc">Operations, event coordination, inventory, backup SGA rep. Manages the website and day-to-day club running.</div>
+          <span class="badge badge-filled">Filled</span>
+        </div>
+
+        <div class="officer-card filled">
+          <div class="role">Advisor</div>
+          <div class="name">Gretchen Schneider</div>
+          <div class="desc">Coordinator of Access Services at the Oakton College Library; institutional guidance, paperwork oversight, and Student Life coordination.</div>
+          <span class="badge badge-filled">Filled</span>
+        </div>
+
+        <div class="officer-card open">
+          <div class="role">Treasurer</div>
+          <div class="name">— Open Position —</div>
+          <div class="desc">Track expenses, submit reimbursements, maintain budget spreadsheet. ~30 min/week. Spreadsheet skills helpful.</div>
+          <span class="badge badge-open">Now Recruiting</span>
+        </div>
+
+        <div class="officer-card open">
+          <div class="role">Event Coordinator</div>
+          <div class="name">— Open Position —</div>
+          <div class="desc">Plan tournaments, D&D marathons, themed nights. 1–2 hrs/week during event weeks. Creativity and logistics skills.</div>
+          <span class="badge badge-open">Now Recruiting</span>
+        </div>
+
+        <div class="officer-card open">
+          <div class="role">VP — Skokie</div>
+          <div class="name">— Open Position —</div>
+          <div class="desc">Launch and run weekly game nights at Skokie campus. 2 hrs/week. You are building a second campus from scratch.</div>
+          <span class="badge badge-open">Now Recruiting</span>
+        </div>
+      </div>
+
+      <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-top: 1.5rem;">
+        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">How to Apply</h4>
+        <ol style="font-size: 0.9rem; color: var(--fg); padding-left: 1.25rem; margin: 0;">
+          <li>Attend at least <strong>3 game nights</strong></li>
+          <li>Talk to <strong>Christian (VP)</strong> about the role</li>
+          <li>Submit a 3–5 sentence statement on why you want it</li>
+          <li>Officers vote by majority; Advisor confirms</li>
+        </ol>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.75rem; margin-bottom: 0;">
+          <strong>No power-seekers.</strong> We want people who show up, not people who want titles for résumés.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="container">
+      <h2>Join the Club</h2>
+      <p class="muted">Three ways to get involved. Pick the one that works for you.</p>
+
+      <div class="join-grid">
+        <div class="join-card">
+          <div class="icon">🚪</div>
+          <h4>1. Just Show Up</h4>
+          <p>No registration required for regular game nights. Walk into the Cafeteria on Tuesdays & Thursdays, 1–4 PM.</p>
+        </div>
+        <div class="join-card">
+          <div class="icon">🔗</div>
+          <h4>2. Oakton Involve</h4>
+          <p>Sign up on <a href="https://oakton.presence.io/organization/card-and-board-game-club" target="_blank">Oakton Involve</a> to get event notifications and help us track attendance.</p>
+        </div>
+      </div>
+
+      <p class="muted" style="text-align: center; font-size: 0.85rem;">
+        Questions? Find us at a game night or contact Student Life & Leadership (SLCI) at <a href="mailto:studentlife@oakton.edu">studentlife@oakton.edu</a>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>Card and Board Game Club — Oakton Community College</p>
+    <p class="muted">A registered student organisation. Tuesdays & Thursdays, 1:00–4:00 PM · Des Plaines Campus, Cafeteria</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Never commit secrets
+secrets.md
+
+# Never commit OS files
+.DS_Store
+Thumbs.db
+
+# Never commit editor files
+*.swp
+*.swo
+*~
+secrets_template.md
